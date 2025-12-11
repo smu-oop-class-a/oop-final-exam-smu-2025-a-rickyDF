@@ -1,9 +1,9 @@
 name: Autograding Tests
 
 on:
-  push:
-  workflow_dispatch:
-  repository_dispatch:
+  - push
+  - workflow_dispatch
+  - repository_dispatch
 
 permissions:
   checks: write
@@ -16,15 +16,17 @@ jobs:
     if: github.actor != 'github-classroom[bot]'
 
     steps:
-    - name: Checkout student code
+    - name: Checkout code
       uses: actions/checkout@v4
 
-    ############################################################
-    # Run the PowerShell evaluator (Windows)
-    ############################################################
+      ####################################################################
+      # This is where you place your autograding tests
+      # For more information on this runner:
+      # https://github.com/classroom-resources/autograding-io-grader
+      ####################################################################
     - name: Run ExamEvaluator.ps1
-      id: exam-evaluator
       uses: classroom-resources/autograding-io-grader@v1
+      id: exam-evaluator
       with:
         test-name: "OOP Final Exam Evaluator"
         command: |
@@ -33,11 +35,13 @@ jobs:
         comparison-method: substring
         expected-output: "Total Score:"
 
-    ############################################################
-    # Report results to GitHub Classroom
-    ############################################################
+    ####################################################################
+    # Reporter — sends autograde result back to GitHub Classroom
+    # Documentation:
+    # https://github.com/classroom-resources/autograding-grading-reporter
+    ####################################################################
     - name: Autograding Reporter
       uses: classroom-resources/autograding-grading-reporter@v1
       with:
-        # ✅ MUST NOT use quotes
+        # ✅ Must NOT be quoted; must be a comma-separated list
         runners: exam-evaluator
